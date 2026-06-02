@@ -12,6 +12,46 @@
     <div class="max-w-7xl mx-auto p-6 pt-6">
         <h1 class="text-2xl font-bold mb-6">{{ $title }}: prod_2 vs vprod_2</h1>
 
+        @if(isset($filterConfig) && count($filterConfig) > 0)
+        <div class="bg-white rounded-lg shadow mb-6 p-4">
+            <form method="GET" action="{{ url()->current() }}" class="flex flex-wrap items-end gap-6">
+                @foreach($filterConfig as $col => $cfg)
+                <div class="flex gap-4 items-end">
+                    <div>
+                        <label for="c1-filter-{{ $col }}" class="block text-xs font-medium text-gray-600 mb-1">{{ $cfg['label'] }} <span class="text-blue-600">(prod_2)</span></label>
+                        <select name="c1_{{ $col }}" id="c1-filter-{{ $col }}" class="filter-select border border-gray-300 rounded px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <option value="">All</option>
+                            @foreach($c1FilterValues[$col] ?? [] as $option)
+                            <option value="{{ $option['value'] }}" {{ (isset($c1ActiveFilters[$col]) && $c1ActiveFilters[$col] == $option['value']) ? 'selected' : '' }}>{{ $option['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="c2-filter-{{ $col }}" class="block text-xs font-medium text-gray-600 mb-1">{{ $cfg['label'] }} <span class="text-purple-600">(vprod_2)</span></label>
+                        <select name="c2_{{ $col }}" id="c2-filter-{{ $col }}" class="filter-select border border-gray-300 rounded px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <option value="">All</option>
+                            @foreach($c2FilterValues[$col] ?? [] as $option)
+                            <option value="{{ $option['value'] }}" {{ (isset($c2ActiveFilters[$col]) && $c2ActiveFilters[$col] == $option['value']) ? 'selected' : '' }}>{{ $option['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                @endforeach
+                <div class="flex gap-2">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">Filter</button>
+                    @if((isset($c1ActiveFilters) && count($c1ActiveFilters) > 0) || (isset($c2ActiveFilters) && count($c2ActiveFilters) > 0))
+                    <a href="{{ url()->current() }}" class="bg-gray-200 text-gray-700 px-4 py-1.5 rounded text-sm hover:bg-gray-300 inline-block">Clear</a>
+                    @endif
+                </div>
+            </form>
+        </div>
+        <script>
+            document.querySelectorAll('.filter-select').forEach(function(el) {
+                el.addEventListener('change', function() { this.form.submit(); });
+            });
+        </script>
+        @endif
+
         {{-- Step 1: prod_2 data --}}
         <div class="bg-white rounded-lg shadow mb-8">
             <div class="p-4 border-b border-gray-200 bg-blue-50">
@@ -20,9 +60,10 @@
 
             <div class="p-4 border-b border-gray-200">
                 <h3 class="font-medium text-gray-700">All {{ ucfirst($table) }} Records</h3>
-                <p class="text-sm text-gray-500">Total: {{ $c1All->count() }}@if($hasSoftDeletes) (Active: {{ $c1ActiveCount }}, Inactive: {{ $c1Inactive->count() }})@endif</p>
+                <p class="text-sm text-gray-500">Total: {{ $c1All->total() }}@if($hasSoftDeletes) (Active: {{ $c1ActiveCount }}, Inactive: {{ $c1Inactive->count() }})@endif</p>
             </div>
-            <div class="overflow-x-auto max-h-80 overflow-y-auto">
+
+            <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
@@ -36,7 +77,7 @@
                     <tbody>
                         @foreach($c1All as $row)
                         <tr class="border-t border-gray-200 {{ $hasSoftDeletes && $row->deleted_at ? 'bg-red-50' : '' }}">
-                            <td class="px-3 py-1.5 text-gray-400">{{ $loop->iteration }}</td>
+                            <td class="px-3 py-1.5 text-gray-400">{{ ($c1All->currentPage() - 1) * $c1All->perPage() + $loop->iteration }}</td>
                             @foreach($columns as $field => $label)
                             <td class="px-3 py-1.5">{{ $row->$field ?? '-' }}</td>
                             @endforeach
@@ -49,10 +90,16 @@
                 </table>
             </div>
 
+            @if ($c1All->hasPages())
+            <div class="px-4 py-2 border-t border-gray-200">
+                {{ $c1All->links('pagination::tailwind') }}
+            </div>
+            @endif
+
             <div class="p-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-{{ $hasSoftDeletes ? '3' : '1' }} gap-4">
                 <div class="bg-blue-50 rounded p-3 text-center">
                     <div class="text-xs text-gray-500">All Records</div>
-                    <div class="text-xl font-bold">{{ $c1All->count() }}</div>
+                    <div class="text-xl font-bold">{{ $c1All->total() }}</div>
                 </div>
                 @if($hasSoftDeletes)
                 <div class="bg-green-50 rounded p-3 text-center">
@@ -75,9 +122,10 @@
 
             <div class="p-4 border-b border-gray-200">
                 <h3 class="font-medium text-gray-700">All {{ ucfirst($table) }} Records</h3>
-                <p class="text-sm text-gray-500">Total: {{ $c2All->count() }}@if($hasSoftDeletes) (Active: {{ $c2ActiveCount }}, Inactive: {{ $c2Inactive->count() }})@endif</p>
+                <p class="text-sm text-gray-500">Total: {{ $c2All->total() }}@if($hasSoftDeletes) (Active: {{ $c2ActiveCount }}, Inactive: {{ $c2Inactive->count() }})@endif</p>
             </div>
-            <div class="overflow-x-auto max-h-80 overflow-y-auto">
+
+            <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
@@ -91,7 +139,7 @@
                     <tbody>
                         @foreach($c2All as $row)
                         <tr class="border-t border-gray-200 {{ $hasSoftDeletes && $row->deleted_at ? 'bg-red-50' : '' }}">
-                            <td class="px-3 py-1.5 text-gray-400">{{ $loop->iteration }}</td>
+                            <td class="px-3 py-1.5 text-gray-400">{{ ($c2All->currentPage() - 1) * $c2All->perPage() + $loop->iteration }}</td>
                             @foreach($columns as $field => $label)
                             <td class="px-3 py-1.5">{{ $row->$field ?? '-' }}</td>
                             @endforeach
@@ -104,10 +152,16 @@
                 </table>
             </div>
 
+            @if ($c2All->hasPages())
+            <div class="px-4 py-2 border-t border-gray-200">
+                {{ $c2All->links('pagination::tailwind') }}
+            </div>
+            @endif
+
             <div class="p-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-{{ $hasSoftDeletes ? '3' : '1' }} gap-4">
                 <div class="bg-blue-50 rounded p-3 text-center">
                     <div class="text-xs text-gray-500">All Records</div>
-                    <div class="text-xl font-bold">{{ $c2All->count() }}</div>
+                    <div class="text-xl font-bold">{{ $c2All->total() }}</div>
                 </div>
                 @if($hasSoftDeletes)
                 <div class="bg-green-50 rounded p-3 text-center">
@@ -127,9 +181,10 @@
         <div class="bg-white rounded-lg shadow mb-8">
             <div class="p-4 border-b border-gray-200 bg-orange-50">
                 <h2 class="text-lg font-semibold text-orange-800">Step 3: Unique Records from vprod_2 (excluding prod_2 duplicates)</h2>
-                <p class="text-sm text-orange-700">vprod_2 records whose {{ $keyField }} does not exist in prod_2 — {{ $c2UniqueActive->count() }} records</p>
+                <p class="text-sm text-orange-700">vprod_2 records whose {{ $keyField }} does not exist in prod_2 — {{ $c2UniqueActive->total() }} records</p>
             </div>
-            <div class="overflow-x-auto max-h-80 overflow-y-auto">
+
+            <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
@@ -142,7 +197,7 @@
                     <tbody>
                         @forelse($c2UniqueActive as $row)
                         <tr class="border-t border-gray-200">
-                            <td class="px-3 py-1.5 text-gray-400">{{ $loop->iteration }}</td>
+                            <td class="px-3 py-1.5 text-gray-400">{{ ($c2UniqueActive->currentPage() - 1) * $c2UniqueActive->perPage() + $loop->iteration }}</td>
                             @foreach($columns as $field => $label)
                             <td class="px-3 py-1.5">{{ $row->$field ?? '-' }}</td>
                             @endforeach
@@ -155,6 +210,12 @@
                     </tbody>
                 </table>
             </div>
+
+            @if ($c2UniqueActive->hasPages())
+            <div class="px-4 py-2 border-t border-gray-200">
+                {{ $c2UniqueActive->links('pagination::tailwind') }}
+            </div>
+            @endif
         </div>
         @endif
 
@@ -165,13 +226,14 @@
                 <h2 class="text-lg font-semibold text-green-800">Step 4: Merged {{ ucfirst($table) }} Records</h2>
                 <p class="text-sm text-green-700">
                     @if($hasSoftDeletes)
-                    prod_2 active: {{ $c1ActiveCount }} + vprod_2 unique: {{ $c2UniqueActive->count() }} = Total: {{ $mergedCount }}
+                    prod_2 active: {{ $c1ActiveCount }} + vprod_2 unique: {{ $c2UniqueActive->total() }} = Total: {{ $mergedCount }}
                     @else
-                    prod_2: {{ $c1All->count() }} + vprod_2 unique: {{ $c2UniqueActive->count() }} = Total: {{ $mergedCount }}
+                    prod_2: {{ $c1All->total() }} + vprod_2 unique: {{ $c2UniqueActive->total() }} = Total: {{ $mergedCount }}
                     @endif
                 </p>
             </div>
-            <div class="overflow-x-auto max-h-96 overflow-y-auto">
+
+            <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
@@ -185,11 +247,11 @@
                     <tbody>
                         @forelse($merged as $row)
                             @php
-                                $c1KeyValues = $hasSoftDeletes ? $c1Active->pluck($keyField)->toArray() : $c1All->pluck($keyField)->toArray();
+                                $c1KeyValues = $hasSoftDeletes ? $c1Active->pluck($keyField)->toArray() : $c1AllKeyValues;
                                 $source = in_array($row->$keyField, $c1KeyValues) ? 'prod_2' : 'vprod_2';
                             @endphp
                             <tr class="border-t border-gray-200">
-                                <td class="px-4 py-2 text-gray-400">{{ $loop->iteration }}</td>
+                                <td class="px-4 py-2 text-gray-400">{{ ($merged->currentPage() - 1) * $merged->perPage() + $loop->iteration }}</td>
                                 @foreach($columns as $field => $label)
                                 <td class="px-4 py-2">{{ $row->$field ?? '-' }}</td>
                                 @endforeach
@@ -207,6 +269,12 @@
                     </tbody>
                 </table>
             </div>
+
+            @if ($merged->hasPages())
+            <div class="px-4 py-2 border-t border-gray-200">
+                {{ $merged->links('pagination::tailwind') }}
+            </div>
+            @endif
         </div>
         @endif
     </div>
