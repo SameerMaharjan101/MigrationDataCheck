@@ -26,6 +26,7 @@
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
+                            <th class="px-3 py-2 text-left w-10">SN</th>
                             <th class="px-3 py-2 text-left">ID</th>
                             <th class="px-3 py-2 text-left">Username</th>
                             <th class="px-3 py-2 text-left">First Name</th>
@@ -38,6 +39,7 @@
                     <tbody>
                         @foreach($prod2AllUsers as $user)
                         <tr class="border-t border-gray-200 {{ $user->deleted_at ? 'bg-red-50' : '' }}">
+                            <td class="px-3 py-1.5 text-gray-400">{{ $loop->iteration }}</td>
                             <td class="px-3 py-1.5">{{ $user->id }}</td>
                             <td class="px-3 py-1.5 font-medium">{{ $user->username }}</td>
                             <td class="px-3 py-1.5">{{ $user->first_name }}</td>
@@ -81,6 +83,7 @@
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
+                            <th class="px-3 py-2 text-left w-10">SN</th>
                             <th class="px-3 py-2 text-left">ID</th>
                             <th class="px-3 py-2 text-left">Username</th>
                             <th class="px-3 py-2 text-left">First Name</th>
@@ -93,6 +96,7 @@
                     <tbody>
                         @foreach($vprod2AllUsers as $user)
                         <tr class="border-t border-gray-200 {{ $user->deleted_at ? 'bg-red-50' : '' }}">
+                            <td class="px-3 py-1.5 text-gray-400">{{ $loop->iteration }}</td>
                             <td class="px-3 py-1.5">{{ $user->id }}</td>
                             <td class="px-3 py-1.5 font-medium">{{ $user->username }}</td>
                             <td class="px-3 py-1.5">{{ $user->first_name }}</td>
@@ -132,6 +136,7 @@
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
+                            <th class="px-3 py-2 text-left w-10">SN</th>
                             <th class="px-3 py-2 text-left">ID</th>
                             <th class="px-3 py-2 text-left">Username</th>
                             <th class="px-3 py-2 text-left">First Name</th>
@@ -142,6 +147,7 @@
                     <tbody>
                         @foreach($vprod2UniqueActiveUsers as $user)
                         <tr class="border-t border-gray-200">
+                            <td class="px-3 py-1.5 text-gray-400">{{ $loop->iteration }}</td>
                             <td class="px-3 py-1.5">{{ $user->id }}</td>
                             <td class="px-3 py-1.5 font-medium">{{ $user->username }}</td>
                             <td class="px-3 py-1.5">{{ $user->first_name }}</td>
@@ -164,6 +170,7 @@
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
+                            <th class="px-4 py-2 text-left w-10">SN</th>
                             <th class="px-4 py-2 text-left">Username</th>
                             <th class="px-4 py-2 text-left">First Name</th>
                             <th class="px-4 py-2 text-left">Last Name</th>
@@ -175,6 +182,7 @@
                         @foreach($mergedActiveUsers as $user)
                             @php $source = in_array($user->username, $prod2ActiveUsers->pluck('username')->toArray()) ? 'prod_2' : 'vprod_2'; @endphp
                             <tr class="border-t border-gray-200">
+                                <td class="px-4 py-2 text-gray-400">{{ $loop->iteration }}</td>
                                 <td class="px-4 py-2 font-medium">{{ $user->username }}</td>
                                 <td class="px-4 py-2">{{ $user->first_name }}</td>
                                 <td class="px-4 py-2">{{ $user->last_name }}</td>
