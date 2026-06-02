@@ -26,6 +26,7 @@
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
+                            <th class="px-3 py-2 text-left w-10">SN</th>
                             @foreach($columns as $field => $label)
                             <th class="px-3 py-2 text-left">{{ $label }}</th>
                             @endforeach
@@ -35,6 +36,7 @@
                     <tbody>
                         @foreach($c1All as $row)
                         <tr class="border-t border-gray-200 {{ $hasSoftDeletes && $row->deleted_at ? 'bg-red-50' : '' }}">
+                            <td class="px-3 py-1.5 text-gray-400">{{ $loop->iteration }}</td>
                             @foreach($columns as $field => $label)
                             <td class="px-3 py-1.5">{{ $row->$field ?? '-' }}</td>
                             @endforeach
@@ -79,6 +81,7 @@
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
+                            <th class="px-3 py-2 text-left w-10">SN</th>
                             @foreach($columns as $field => $label)
                             <th class="px-3 py-2 text-left">{{ $label }}</th>
                             @endforeach
@@ -88,6 +91,7 @@
                     <tbody>
                         @foreach($c2All as $row)
                         <tr class="border-t border-gray-200 {{ $hasSoftDeletes && $row->deleted_at ? 'bg-red-50' : '' }}">
+                            <td class="px-3 py-1.5 text-gray-400">{{ $loop->iteration }}</td>
                             @foreach($columns as $field => $label)
                             <td class="px-3 py-1.5">{{ $row->$field ?? '-' }}</td>
                             @endforeach
@@ -129,6 +133,7 @@
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
+                            <th class="px-3 py-2 text-left w-10">SN</th>
                             @foreach($columns as $field => $label)
                             <th class="px-3 py-2 text-left">{{ $label }}</th>
                             @endforeach
@@ -137,13 +142,14 @@
                     <tbody>
                         @forelse($c2UniqueActive as $row)
                         <tr class="border-t border-gray-200">
+                            <td class="px-3 py-1.5 text-gray-400">{{ $loop->iteration }}</td>
                             @foreach($columns as $field => $label)
                             <td class="px-3 py-1.5">{{ $row->$field ?? '-' }}</td>
                             @endforeach
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ count($columns) }}" class="px-3 py-4 text-center text-gray-400">No unique records found</td>
+                            <td colspan="{{ count($columns) + 1 }}" class="px-3 py-4 text-center text-gray-400">No unique records found</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -169,6 +175,7 @@
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-gray-100">
                         <tr>
+                            <th class="px-4 py-2 text-left w-10">SN</th>
                             @foreach($columns as $field => $label)
                             <th class="px-4 py-2 text-left">{{ $label }}</th>
                             @endforeach
@@ -182,6 +189,7 @@
                                 $source = in_array($row->$keyField, $c1KeyValues) ? 'prod_2' : 'vprod_2';
                             @endphp
                             <tr class="border-t border-gray-200">
+                                <td class="px-4 py-2 text-gray-400">{{ $loop->iteration }}</td>
                                 @foreach($columns as $field => $label)
                                 <td class="px-4 py-2">{{ $row->$field ?? '-' }}</td>
                                 @endforeach
@@ -193,7 +201,7 @@
                             </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ count($columns) + 1 }}" class="px-3 py-4 text-center text-gray-400">No records merged</td>
+                            <td colspan="{{ count($columns) + 2 }}" class="px-3 py-4 text-center text-gray-400">No records merged</td>
                         </tr>
                         @endforelse
                     </tbody>
