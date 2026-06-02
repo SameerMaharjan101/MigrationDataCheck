@@ -102,7 +102,7 @@ return [
         'prod_2' => [
             'driver' => 'pgsql',
             'host' => '127.0.0.1',
-            'port' => '5432',
+            'port' => env('DB_PROD_2_PORT', '5432'),
             'database' => 'prod_2',
             'username' => 'local',
             'password' => 'local',
@@ -116,7 +116,7 @@ return [
         'vprod_2' => [
             'driver' => 'pgsql',
             'host' => '127.0.0.1',
-            'port' => '5432',
+            'port' => env('DB_VPROD_2_PORT', '5432'),
             'database' => 'vprod_2',
             'username' => 'local',
             'password' => 'local',
@@ -177,7 +177,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-database-'),
+            'prefix' => env('REDIS_PREFIX', Str::slug((string)env('APP_NAME', 'laravel')) . '-database-'),
             'persistent' => env('REDIS_PERSISTENT', false),
         ],
 

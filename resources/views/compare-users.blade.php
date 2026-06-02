@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Comparison: prod_2 vs vprod_2</title>
     @vite('resources/css/app.css')
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-gray-50 p-6 font-sans">
-    <div class="max-w-7xl mx-auto">
+<body class="bg-gray-50 min-h-screen font-sans">
+    @include('partials.navbar')
+    <div class="max-w-7xl mx-auto p-6 pt-6">
         <h1 class="text-2xl font-bold mb-6">User Comparison: prod_2 vs vprod_2</h1>
 
         {{-- Step 1: Access user table from prod_2 --}}
